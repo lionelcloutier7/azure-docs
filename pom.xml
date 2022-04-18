@@ -21,8 +21,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<functionAppName>simple-uppercase</functionAppName>
+		<functionAppName>simpledocs</functionAppName>
 		<functionAppRegion>westus</functionAppRegion>
+		<stagingDirectory>${project.build.directory}/azure-functions/${functionAppName}</stagingDirectory>
+		<functionResourceGroup>functions</functionResourceGroup>
 	</properties>
 
 	<dependencies>
@@ -35,6 +37,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Test -->
@@ -70,7 +73,7 @@
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-functions-maven-plugin</artifactId>
 				<configuration>
-					<resourceGroup>java-functions-group</resourceGroup>
+					<resourceGroup>${functionResourceGroup}</resourceGroup>
 					<appName>${functionAppName}</appName>
 					<region>${functionAppRegion}</region>
 					<appSettings>
@@ -80,6 +83,75 @@
 						</property>
 					</appSettings>
 				</configuration>
+				<executions>
+					<execution>
+						<id>package-functions</id>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${stagingDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}</directory>
+									<includes>
+										<include>host.json</include>
+										<include>local.settings.json</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-bin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${stagingDirectory}/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/bin</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${stagingDirectory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
@@ -94,31 +166,6 @@
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
-					</execution>
-					<execution>
-						<id>npm-install</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>npm-build</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run-script build</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm-test</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run-script e2e</arguments>
-						</configuration>
-						<phase>test</phase>
 					</execution>
 				</executions>
 			</plugin>
