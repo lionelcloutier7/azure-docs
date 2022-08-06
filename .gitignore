@@ -1,3 +1,6 @@
+obj/
+setup-env.sh
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 bin/

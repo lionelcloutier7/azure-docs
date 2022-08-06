@@ -40,6 +40,11 @@
 			<artifactId>azure-eventhubs</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>azure-documentdb</artifactId>
+			<version>LATEST</version>
+		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -82,14 +87,14 @@
 							<name>FUNCTIONS_EXTENSION_VERSION</name>
 							<value>2.0.11933</value>
 						</property>
-                        <property>
-                            <name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
-                            <value>${TRANSACTIONS_EVENT_HUB_CONNECTION_STRING}</value>
-                        </property>
-                        <property>
-                            <name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
-                            <value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
-                        </property>
+						<property>
+							<name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
+							<value>${TRANSACTIONS_EVENT_HUB_CONNECTION_STRING}</value>
+						</property>
+						<property>
+							<name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
+							<value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
+						</property>
 					</appSettings>
 				</configuration>
 				<executions>
@@ -163,18 +168,18 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.6</version>
-				<configuration>
-					<nodeVersion>v8.8.1</nodeVersion>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>install-npm</id>
+						<id>fix-function-json</id>
+						<phase>package</phase>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>exec</goal>
 						</goals>
+						<configuration>
+							<executable>./post-process-function.json.sh</executable>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
