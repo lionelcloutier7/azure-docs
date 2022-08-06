@@ -29,13 +29,14 @@ public class FooHandler {
 
 	@FunctionName("Update-Inventory")
 	public void update(
-			@EventHubTrigger(name = "data", eventHubName = "events", connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") String data,
-			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) OutputBinding<String> document,
-			final ExecutionContext context) {
-
+			@EventHubTrigger(name = "data", eventHubName = "events", connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") //
+			String data,
+			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
+					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
+			OutputBinding<String> document, final ExecutionContext context) {
 		context.getLogger()
 				.info("Java Event Hub transaction trigger processed a request: " + data);
-		context.getLogger().info("message: " + data);
 		document.setValue(data);
+		context.getLogger().info("Response: " + document.getValue());
 	}
 }
