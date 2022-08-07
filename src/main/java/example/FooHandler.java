@@ -27,15 +27,15 @@ import org.springframework.cloud.function.adapter.azure.AzureSpringBootRequestHa
 /**
  * @author Soby Chacko
  */
-public class FooHandler extends AzureSpringBootRequestHandler<String, String> {
+public class FooHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
 
-	@FunctionName("Update-Inventory")
+	@FunctionName("Foo-Bar")
 	public void update(
 			@EventHubTrigger(name = "data", eventHubName = "events", connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") //
-			String data,
+			Foo data,
 			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
 					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
-			OutputBinding<String> document, final ExecutionContext context) {
+			OutputBinding<Bar> document, final ExecutionContext context) {
 		document.setValue(handleRequest(data, context));
 	}
 }

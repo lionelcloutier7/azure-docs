@@ -30,7 +30,56 @@ public class Config {
 	}
 
 	@Bean
-	public Function<String, String> uppercase() {
-		return foo -> foo.toUpperCase();
+	public Function<Foo, Bar> uppercase() {
+		return foo -> new Bar(foo.getValue().toUpperCase());
 	}
+}
+
+class Foo {
+
+	private String value;
+
+	Foo() {
+	}
+
+	public String lowercase() {
+		return value.toLowerCase();
+	}
+
+	public Foo(String value) {
+		this.value = value;
+	}
+
+	public String uppercase() {
+		return value.toUpperCase();
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+}
+
+class Bar {
+
+	private String value;
+
+	Bar() {
+	}
+
+	public Bar(String value) {
+		this.value = value;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 }
