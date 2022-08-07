@@ -71,78 +71,6 @@
 
 		<plugins>
 			<plugin>
-				<groupId>com.microsoft.azure</groupId>
-				<artifactId>azure-functions-maven-plugin</artifactId>
-				<configuration>
-					<resourceGroup>${functionResourceGroup}</resourceGroup>
-					<appName>${functionAppName}</appName>
-					<region>${functionAppRegion}</region>
-					<appSettings>
-						<property>
-							<name>FUNCTIONS_EXTENSION_VERSION</name>
-							<value>2.0.11933</value>
-						</property>
-						<property>
-							<name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
-							<value>${TRANSACTIONS_EVENT_HUB_CONNECTION_STRING}</value>
-						</property>
-						<property>
-							<name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
-							<value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
-						</property>
-					</appSettings>
-				</configuration>
-				<executions>
-					<execution>
-						<id>package-functions</id>
-						<goals>
-							<goal>package</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<overwrite>true</overwrite>
-							<outputDirectory>${stagingDirectory}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}</directory>
-									<includes>
-										<include>host.json</include>
-										<include>local.settings.json</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-bin</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<overwrite>true</overwrite>
-							<outputDirectory>${stagingDirectory}/bin</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/bin</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -163,8 +91,69 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>com.microsoft.azure</groupId>
+				<artifactId>azure-functions-maven-plugin</artifactId>
+				<configuration>
+					<resourceGroup>${functionResourceGroup}</resourceGroup>
+					<appName>${functionAppName}</appName>
+					<region>${functionAppRegion}</region>
+					<appSettings>
+						<property>
+							<name>FUNCTIONS_EXTENSION_VERSION</name>
+							<value>2.0.11933</value>
+						</property>
+						<property>
+							<name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
+							<value>${TRANSACTIONS_EVENT_HUB_CONNECTION_STRING}</value>
+						</property>
+						<property>
+							<name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
+							<value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
+						</property>
+						<property>
+							<name>MSDEPLOY_RENAME_LOCKED_FILES</name>
+							<value>1</value>
+						</property>
+					</appSettings>
+				</configuration>
+				<executions>
+					<execution>
+						<id>package-functions</id>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${stagingDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}</directory>
+									<includes>
+										<include>host.json</include>
+										<include>local.settings.json</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<id>fix-function-json</id>
