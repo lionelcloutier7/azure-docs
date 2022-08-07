@@ -22,10 +22,12 @@ import com.microsoft.azure.functions.annotation.CosmosDBOutput;
 import com.microsoft.azure.functions.annotation.EventHubTrigger;
 import com.microsoft.azure.functions.annotation.FunctionName;
 
+import org.springframework.cloud.function.adapter.azure.AzureSpringBootRequestHandler;
+
 /**
  * @author Soby Chacko
  */
-public class FooHandler {
+public class FooHandler extends AzureSpringBootRequestHandler<String, String> {
 
 	@FunctionName("Update-Inventory")
 	public void update(
@@ -34,9 +36,6 @@ public class FooHandler {
 			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
 					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
 			OutputBinding<String> document, final ExecutionContext context) {
-		context.getLogger()
-				.info("Java Event Hub transaction trigger processed a request: " + data);
-		document.setValue(data);
-		context.getLogger().info("Response: " + document.getValue());
+		document.setValue(handleRequest(data, context));
 	}
 }
