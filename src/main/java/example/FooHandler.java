@@ -18,22 +18,15 @@ package example;
 
 import java.util.function.Function;
 
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.OutputBinding;
-import com.microsoft.azure.functions.annotation.CosmosDBOutput;
-import com.microsoft.azure.functions.annotation.EventHubTrigger;
-import com.microsoft.azure.functions.annotation.FunctionName;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.function.adapter.azure.AzureSpringBootRequestHandler;
 import org.springframework.context.annotation.Bean;
 
 /**
  * @author Soby Chacko
  */
 @SpringBootApplication
-public class FooHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
+public class FooHandler {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(FooHandler.class, args);
@@ -44,15 +37,6 @@ public class FooHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
 		return foo -> new Bar(foo.getValue().toUpperCase());
 	}
 
-	@FunctionName("Foo-Bar")
-	public void update(
-			@EventHubTrigger(name = "data", eventHubName = "events", connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") //
-			Foo data,
-			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
-					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
-			OutputBinding<Bar> document, final ExecutionContext context) {
-		handleOutput(data, document, context);
-	}
 }
 
 class Foo {
