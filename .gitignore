@@ -1,5 +1,6 @@
 obj/
 setup-env.sh
+extensions.csproj
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

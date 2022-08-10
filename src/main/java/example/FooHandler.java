@@ -51,9 +51,7 @@ public class FooHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
 			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
 					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
 			OutputBinding<Bar> document, final ExecutionContext context) {
-		context.getLogger().info("Entering function: " + data);
 		handleOutput(data, document, context);
-		context.getLogger().info("Exiting function: " + document.getValue());
 	}
 }
 
