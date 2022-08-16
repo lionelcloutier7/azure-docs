@@ -16,7 +16,10 @@
 
 package example;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,15 +29,21 @@ import org.springframework.context.annotation.Bean;
  * @author Soby Chacko
  */
 @SpringBootApplication
-public class FooHandler {
+public class FunctionApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(FooHandler.class, args);
+		SpringApplication.run(FunctionApplication.class, args);
 	}
 
 	@Bean
 	public Function<Foo, Bar> uppercase() {
 		return foo -> new Bar(foo.getValue().toUpperCase());
+	}
+
+	@Bean
+	public Function<List<Map<String, Object>>, Foo> notification() {
+		return list -> new Foo(list.stream().map(map -> (String) map.get("value"))
+				.collect(Collectors.joining(",")));
 	}
 
 }

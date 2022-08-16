@@ -24,14 +24,16 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 
 import org.springframework.cloud.function.adapter.azure.AzureSpringBootRequestHandler;
 
-public class AzureHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
-	@FunctionName("Foo-Bar")
-	public void update(
-			@EventHubTrigger(name = "data", eventHubName = "events", connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") //
-			Foo data,
+public class UppercaseHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
+	@FunctionName("uppercase")
+	public void update( //
+			@EventHubTrigger(name = "data", eventHubName = "events", //
+					connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING") //
+			Foo data, //
 			@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages", //
 					connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true) //
-			OutputBinding<Bar> document, final ExecutionContext context) {
+			OutputBinding<Bar> document, //
+			final ExecutionContext context) {
 		handleOutput(data, document, context);
 	}
 }

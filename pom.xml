@@ -93,7 +93,7 @@
 				<plugin>
 					<groupId>com.microsoft.azure</groupId>
 					<artifactId>azure-functions-maven-plugin</artifactId>
-					<version>1.0.0-beta-2</version>
+					<version>1.0.0-beta-4</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
@@ -145,6 +145,17 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>example.FunctionApplication</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-functions-maven-plugin</artifactId>
 				<configuration>
@@ -154,7 +165,7 @@
 					<appSettings>
 						<property>
 							<name>FUNCTIONS_EXTENSION_VERSION</name>
-							<value>2.0.11933</value>
+							<value>beta</value>
 						</property>
 						<property>
 							<name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
