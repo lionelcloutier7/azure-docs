@@ -81,7 +81,7 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>example.FooHandler</mainClass>
+								<mainClass>example.FunctionApplication</mainClass>
 							</manifest>
 						</archive>
 					</configuration>
