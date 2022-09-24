@@ -1,4 +1,4 @@
-= Spring Cloud Function and Azure Functions
+= Spring Cloud Function 2.0 and Azure Functions
 
 https://github.com/spring-cloud/spring-cloud-function[Spring Cloud
 Function] has had support for Microsoft
@@ -189,21 +189,29 @@ public class UppercaseHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
 ```
 
 Notice that the base class `AzureSpringBootRequestHandler` is generic
-with type parameters for input and output. There are 2 `handle*`
-methods in the base class, one (`handle`) which returns the response
-object, and one (`handleOutput`) which accepts an `OutputBinding` and
-binds it to the output from the `Function`.
+with type parameters for input and output. You have to match the input
+type to the incoming event data, which will be presented in JSON and
+converted using Jackson by Azure before Spring has anything to
+do. There are 2 utility methods in the base class, one (`handle`)
+which returns the response object, and one (`handleOutput`) which
+accepts an `OutputBinding` and binds it to the output from the user
+`Function`.
+
+NOTE: If the incoming JSON cannot be converted to the function input
+type (`Foo` in this case) you will see Azure fail with a confusing `no
+such method` error. If you see that you might need to change the
+`@FunctionName` method to a `String` input and eyeball the data to
+make sure it is bindable to the desired input type.
 
 There are various configuration options that drive the runtime
 behaviour of the Azure Function. The most important (and only
 mandatory) one is the `MAIN_CLASS`, which is the main
 `@SpringBootApplication` class that carries the declaration of the
 `Function` (or `Functions`). You can specify this as an environment
-variable, or as the `Main-Class` entry in the application jar manifest
-(this is the way it is set up in the sample below). As long as your
-app has a main class with precisely one function, there is no need to
-do anything else. In the sample app linked above we use the manifest
-to define the main class:
+variable, or as the `Main-Class` entry in the application jar
+manifest. As long as your app has a main class with precisely one
+function, there is no need to do anything else. In the sample app we
+use the manifest to define the main class:
 
 ```xml
 <plugin>
@@ -220,15 +228,19 @@ to define the main class:
 ```
 
 If your app has multiple `Function` beans, they can be mapped to the
-Azure function name though the `@FunctionName` annotation - the bean
-name matches the function name. In this way you can create an Azure
-Function Application, which is a single deployment artifact for a
-group of functions. If you prefer, you can also use an arbitrary
+Azure function though the `@FunctionName` annotation - the bean name
+(or more precisely the name i nthe `FunctionCatalog`) matches the
+function name. In this way you can create an Azure Function
+Application, which is a single deployment artifact for a group of
+functions. If you prefer, you can also use an arbitrary
 `@FunctionName` and configure the Spring Cloud Function name through
-an environment variable `FUNCTION_NAME`.
+an environment variable `FUNCTION_NAME` or a `function.name` in your
+`application.properties`.
 
 There is another simple sample of how to set up a Spring Cloud
 Function as an Azure Function in
 https://github.com/spring-cloud/spring-cloud-function/blob/master/spring-cloud-function-samples/function-sample-azure/README.adoc[the
 project repo] - this one is an HTTP trigger from an Azure perspective,
 but the Spring Cloud Function parts are very similar.
+
+If you are at https://springoneplatform.io[Spring One Platform] this week, come along to a https://springoneplatform.io/2018/sessions/running-serverless-applications-using-spring-and-microsoft-azure[presentation on Spring and Azure Functions] by Jeff Hollan (Microsoft) and Oleg Zhurakousky (Pivotal).
