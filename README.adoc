@@ -37,10 +37,10 @@ want to bind to an HTTP gateway at deployment time you use
 ```java
 @FunctionName("uppercase")
 public Bar execute(
-		@HttpTrigger(name = "req", methods = { HttpMethod.GET,
-				HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS) Foo foo,
-		ExecutionContext context) {
-	return new Bar(foo.getValue());
+    @HttpTrigger(name = "req", methods = { HttpMethod.GET, HttpMethod.POST },
+        authLevel = AuthorizationLevel.ANONYMOUS) Foo foo,
+    ExecutionContext context) {
+  return new Bar(foo.getValue());
 }
 ```
 
@@ -63,16 +63,24 @@ https://github.com/dsyer/azure-docs[in github]:
 ```java
 @FunctionName("uppercase")
 public Bar execute(
-	@EventHubTrigger(name = "data", eventHubName = "events",
-				connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING")
-		Foo data,
-		@CosmosDBOutput(name = "document", databaseName = "inventory", collectionName = "messages",
-				connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING", createIfNotExists = true)
-		OutputBinding<Bar> document,
-		final ExecutionContext context) {
-	return document.setValue(new Bar(foo.getValue()));
+  @EventHubTrigger(name = "data", eventHubName = "events",
+        connection = "TRANSACTIONS_EVENT_HUB_CONNECTION_STRING")
+    Foo data,
+    @CosmosDBOutput(name = "document", databaseName = "inventory",
+        collectionName = "messages",
+        connectionStringSetting = "PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING",
+        createIfNotExists = true)
+    OutputBinding<Bar> document,
+    final ExecutionContext context) {
+  return document.setValue(new Bar(foo.getValue()));
 }
 ```
+
+NOTE: If the incoming JSON cannot be converted to the function input
+type (`Foo` in this case) you will see Azure fail with a confusing `no
+such method` error. If you see that you might be able to change the
+`@FunctionName` method to a `String` input and eyeball the data to
+make sure it is bindable to the desired input type.
 
 The annotations carry connection credential information through an
 indirection to environment variables that are configured in the
@@ -81,39 +89,39 @@ build `pom.xml` through the Azure Functions Maven plugin. For example:
 
 ```xml
 <plugin>
-	<groupId>com.microsoft.azure</groupId>
-	<artifactId>azure-functions-maven-plugin</artifactId>
-	<configuration>
-		<resourceGroup>${functionResourceGroup}</resourceGroup>
-		<appName>${functionAppName}</appName>
-		<region>${functionAppRegion}</region>
-		<appSettings>
+  <groupId>com.microsoft.azure</groupId>
+  <artifactId>azure-functions-maven-plugin</artifactId>
+  <configuration>
+    <resourceGroup>${functionResourceGroup}</resourceGroup>
+    <appName>${functionAppName}</appName>
+    <region>${functionAppRegion}</region>
+    <appSettings>
             <property>
-            	<name>FUNCTIONS_EXTENSION_VERSION</name>
-            	<value>beta</value>
+              <name>FUNCTIONS_EXTENSION_VERSION</name>
+              <value>beta</value>
             </property>
             <property>
-            	<name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
+              <name>TRANSACTIONS_EVENT_HUB_CONNECTION_STRING</name>
             <value>${TRANSACTIONS_EVENT_HUB_CONNECTION_STRING}</value>
             </property>
             <property>
-            	<name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
-            	<value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
+              <name>PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING</name>
+              <value>${PRODUCT_ITEMS_DOCUMENTDB_CONNECTION_STRING}</value>
             </property>
             <property>
-            	<name>MSDEPLOY_RENAME_LOCKED_FILES</name>
-            	<value>1</value>
+              <name>MSDEPLOY_RENAME_LOCKED_FILES</name>
+              <value>1</value>
             </property>
-		</appSettings>
-	</configuration>
-	<executions>
-		<execution>
+    </appSettings>
+  </configuration>
+  <executions>
+    <execution>
             <id>package-functions</id>
             <goals>
-            	<goal>package</goal>
+              <goal>package</goal>
             </goals>
-		</execution>
-	</executions>
+    </execution>
+  </executions>
 </plugin>
 ```
 
@@ -161,7 +169,7 @@ The equivalent of both the examples above would be a single `@Bean`:
 ```java
 @Bean
 public Function<Foo, Bar> uppercase() {
-	return foo -> new Bar(foo.getValue().toUpperCase());
+  return foo -> new Bar(foo.getValue().toUpperCase());
 }
 ```
 
@@ -180,11 +188,11 @@ the subclass of the Spring Cloud handler. Example:
 
 ```java
 public class UppercaseHandler extends AzureSpringBootRequestHandler<Foo, Bar> {
-	@FunctionName("uppercase")
-		@HttpTrigger(name = "req", methods = { HttpMethod.GET,
-				HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS) Foo foo,
-		ExecutionContext context) {
-	return super.handle(foo, context);
+  @FunctionName("uppercase")
+    @HttpTrigger(name = "req", methods = { HttpMethod.GET,
+        HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS) Foo foo,
+    ExecutionContext context) {
+  return super.handle(foo, context);
 }
 ```
 
@@ -197,11 +205,14 @@ which returns the response object, and one (`handleOutput`) which
 accepts an `OutputBinding` and binds it to the output from the user
 `Function`.
 
-NOTE: If the incoming JSON cannot be converted to the function input
-type (`Foo` in this case) you will see Azure fail with a confusing `no
-such method` error. If you see that you might need to change the
-`@FunctionName` method to a `String` input and eyeball the data to
-make sure it is bindable to the desired input type.
+NOTE: The base class is pure boilerplate, and serves only as
+an external representation of the binding of your Spring functions
+to the serverless platform services. The Azure bindings would be ignored
+if you were running in a different platform, or locally via the
+Spring Cloud Function web adapter, for instance. It might be possible
+in the future to replace it with an interface declaration - the
+Azure platform doesn't permit this currently, but it's something we
+are looking at with the Microsoft team.
 
 There are various configuration options that drive the runtime
 behaviour of the Azure Function. The most important (and only
@@ -215,15 +226,15 @@ use the manifest to define the main class:
 
 ```xml
 <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-jar-plugin</artifactId>
-	<configuration>
-		<archive>
-			<manifest>
-				<mainClass>example.FunctionApplication</mainClass>
-			</manifest>
-		</archive>
-	</configuration>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-jar-plugin</artifactId>
+  <configuration>
+    <archive>
+      <manifest>
+        <mainClass>example.FunctionApplication</mainClass>
+      </manifest>
+    </archive>
+  </configuration>
 </plugin>
 ```
 
@@ -243,4 +254,4 @@ https://github.com/spring-cloud/spring-cloud-function/blob/master/spring-cloud-f
 project repo] - this one is an HTTP trigger from an Azure perspective,
 but the Spring Cloud Function parts are very similar.
 
-If you are at https://springoneplatform.io[Spring One Platform] this week, come along to a https://springoneplatform.io/2018/sessions/running-serverless-applications-using-spring-and-microsoft-azure[presentation on Spring and Azure Functions] by Jeff Hollan (Microsoft) and Oleg Zhurakousky (Pivotal).
+NOTE: If you are at https://springoneplatform.io[Spring One Platform] this week, come along to a https://springoneplatform.io/2018/sessions/running-serverless-applications-using-spring-and-microsoft-azure[presentation on Spring and Azure Functions] by Jeff Hollan (Microsoft) and Oleg Zhurakousky (Pivotal).
